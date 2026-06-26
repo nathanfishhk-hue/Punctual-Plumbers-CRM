@@ -85,9 +85,16 @@ export default function JobCard({ userRole }) {
           <h3>Time Tracking</h3>
           <p>Time In: {job.timeIn ? new Date(job.timeIn).toLocaleString() : 'Not logged'}</p>
           <p>Time Out: {job.timeOut ? new Date(job.timeOut).toLocaleString() : 'Not logged'}</p>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <p>Hours: {job.labourHours || 0}</p>
+          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
             <button className="btn btn-primary" onClick={() => handleTimeLog('In')} disabled={!!job.timeIn}>Log Time In</button>
             <button className="btn btn-success" onClick={() => handleTimeLog('Out')} disabled={!job.timeIn || !!job.timeOut}>Log Time Out</button>
+            {userRole === 'admin' && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <input type="number" value={job.labourHours || 0} onChange={e => saveJob({...job, labourHours: +e.target.value})} min="0" placeholder="Hours" />
+                <input type="number" value={job.labourRate || 350} onChange={e => saveJob({...job, labourRate: +e.target.value})} min="0" placeholder="Rate" />
+              </div>
+            )}
           </div>
         </div>
 
