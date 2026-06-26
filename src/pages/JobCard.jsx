@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { differenceInHours, parseISO } from 'date-fns';
+
+const ACCOUNTANT_EMAIL = 'nate.fish.viet@gmail.com';
 
 export default function JobCard({ userRole }) {
   const { id } = useParams();
@@ -36,10 +37,37 @@ export default function JobCard({ userRole }) {
       updated.timeIn = now;
     } else {
       updated.timeOut = now;
-      const hours = differenceInHours(parseISO(now), parseISO(job.timeIn || now));
-      updated.labourHours = hours > 0 ? hours : 0;
+      if (job.timeIn) {
+        const hours = (new Date(now) - new Date(job.timeIn)) / (1000 * 60 * 60);
+        updated.labourHours = Math.max(0, Math.round(hours * 100) / 100);
+      }
     }
     saveJob(updated);
+  };
+
+  const formatForZero = () => {
+    const lines = [
+      `Job #: ${job.id}`,
+      `Customer: ${job.customerName}`,
+      `Date: ${new Date(job.createdAt).toLocaleDateString()}`,
+      `Description: ${job.description}`,
+      `Labour: ${job.labourHours} hrs @ R${job.labourRate} = R${labourCost}`,
+      'Materials:',
+      ...(job.materials || []).map(m => `  - ${m.name}: ${m.quantity} x R${m.price} = R${m.total}`),
+      `Subtotal: R${labourCost + materialCost}`,
+      `VAT (15%): R${vat.toFixed(2)}`,
+      `TOTAL: R${total.toFixed(2)}`,
+      `Bank: FNB, Account: 123456789, Branch: 250655, Ref: Job #${job.id}`
+    ];
+    return lines.join('\n');
+  };
+
+  const sendToAccountant = () => {
+    const formatted = formatForZero();
+    const subject = `Job #${job.id} for Accounting - R${total.toFixed(2)}`;
+    const body = encodeURIComponent(formatted);
+    window.open(`mailto:${ACCOUNTANT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${body}`, '_blank');
+    saveJob({ ...job, status: 'Invoiced' });
   };
 
   const addMaterial = (e) => {
@@ -113,10 +141,10 @@ export default function JobCard({ userRole }) {
           </form>
         </div>
 
-        {userRole === 'admin' && (
+{userRole === 'admin' && (
            <>
              <button className="btn btn-success" onClick={() => { saveJob({...job, status: 'Completed'}); alert('Job marked completed'); }} style={{ marginTop: '1rem', marginRight: '0.5rem' }}>Mark Complete</button>
-             <button className="btn btn-primary" onClick={() => { saveJob({...job, status: 'Invoiced'}); alert('Job sent to accountant'); }} style={{ marginTop: '1rem' }}>Send to Accountant</button>
+             <button className="btn btn-primary" onClick={sendToAccountant} style={{ marginTop: '1rem' }}>Send to Accountant</button>
            </>
          )}
 
@@ -136,12 +164,13 @@ export default function JobCard({ userRole }) {
            </div>
          )}
 
-         {job.status === 'Invoiced' && (
-          <div style={{ marginTop: '1rem', padding: '1rem', background: '#f0fff4', borderLeft: '4px solid #38a169' }}>
-            <strong>Payment via EFT to bank account:</strong>
-            <p>Bank: FNB<br />Account: 123456789<br />Branch: 250655<br />Reference: Job #{job.id}</p>
-          </div>
-        )}
+{job.status === 'Invoiced' && (
+           <div style={{ marginTop: '1rem', padding: '1rem', background: '#f0fff4', borderLeft: '4px solid #38a169' }}>
+             <strong>Payment via EFT to bank account:</strong>
+             <p>Bank: FNB<br />Account: 123456789<br />Branch: 250655<br />Reference: Job #{job.id}</p>
+             <button className="btn btn-sm" onClick={() => navigator.clipboard.writeText(formatForZero())} style={{ marginTop: '0.5rem' }}>Copy for Zero</button>
+           </div>
+         )}
       </div>
     </div>
   );
