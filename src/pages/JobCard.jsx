@@ -111,12 +111,32 @@ export default function JobCard({ userRole }) {
 
         <div style={{ marginTop: '1rem' }}>
           <h3>Time Tracking</h3>
-          <p>Time In: {job.timeIn ? new Date(job.timeIn).toLocaleString() : 'Not logged'}</p>
-          <p>Time Out: {job.timeOut ? new Date(job.timeOut).toLocaleString() : 'Not logged'}</p>
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
+            <div>
+              <label>Time In (24h format)</label>
+              <input type="time" value={job.timeIn ? new Date(job.timeIn).toTimeString().slice(0,5) : ''} onChange={e => {
+                const today = new Date().toISOString().split('T')[0];
+                const timeIn = new Date(`${today}T${e.target.value}`).toISOString();
+                saveJob({ ...job, timeIn });
+              }} />
+            </div>
+            <div>
+              <label>Time Out (24h format)</label>
+              <input type="time" value={job.timeOut ? new Date(job.timeOut).toTimeString().slice(0,5) : ''} onChange={e => {
+                if (!job.timeIn) return;
+                const today = new Date().toISOString().split('T')[0];
+                const timeOut = new Date(`${today}T${e.target.value}`).toISOString();
+                const hours = (new Date(timeOut) - new Date(job.timeIn)) / (1000 * 60 * 60);
+                saveJob({ ...job, timeOut, labourHours: Math.max(0, Math.round(hours * 100) / 100) });
+              }} disabled={!job.timeIn} />
+            </div>
+          </div>
+          <p>Current Time In: {job.timeIn ? new Date(job.timeIn).toLocaleString() : 'Not logged'}</p>
+          <p>Current Time Out: {job.timeOut ? new Date(job.timeOut).toLocaleString() : 'Not logged'}</p>
           <p>Hours: {job.labourHours || 0}</p>
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-            <button className="btn btn-primary" onClick={() => handleTimeLog('In')} disabled={!!job.timeIn}>Log Time In</button>
-            <button className="btn btn-success" onClick={() => handleTimeLog('Out')} disabled={!job.timeIn || !!job.timeOut}>Log Time Out</button>
+            <button className="btn btn-primary" onClick={() => handleTimeLog('In')} disabled={!!job.timeIn}>Log Time In Now</button>
+            <button className="btn btn-success" onClick={() => handleTimeLog('Out')} disabled={!job.timeIn || !!job.timeOut}>Log Time Out Now</button>
             {userRole === 'admin' && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <input type="number" value={job.labourHours || 0} onChange={e => saveJob({...job, labourHours: +e.target.value})} min="0" placeholder="Hours" />
@@ -142,35 +162,35 @@ export default function JobCard({ userRole }) {
         </div>
 
 {userRole === 'admin' && (
-           <>
-             <button className="btn btn-success" onClick={() => { saveJob({...job, status: 'Completed'}); alert('Job marked completed'); }} style={{ marginTop: '1rem', marginRight: '0.5rem' }}>Mark Complete</button>
-             <button className="btn btn-primary" onClick={sendToAccountant} style={{ marginTop: '1rem' }}>Send to Accountant</button>
-           </>
-         )}
+          <>
+            <button className="btn btn-success" onClick={() => { saveJob({...job, status: 'Completed'}); alert('Job marked completed'); }} style={{ marginTop: '1rem', marginRight: '0.5rem' }}>Mark Complete</button>
+            <button className="btn btn-primary" onClick={sendToAccountant} style={{ marginTop: '1rem' }}>Send to Accountant</button>
+          </>
+        )}
 
-         {userRole === 'employee' && job.status !== 'Completed' && (
+        {userRole === 'employee' && job.status !== 'Completed' && (
           <button className="btn btn-success" onClick={submitJob} style={{ marginTop: '1rem' }}>Submit Completed Job</button>
         )}
 
         {userRole === 'admin' && (
-           <div style={{ marginTop: '1rem' }}>
-             <select value={job.status} onChange={e => saveJob({...job, status: e.target.value})}>
-               <option value="Pending">Pending</option>
-               <option value="Assigned">Assigned</option>
-               <option value="In Progress">In Progress</option>
-               <option value="Completed">Completed</option>
-               <option value="Invoiced">Invoiced</option>
-             </select>
-           </div>
-         )}
+          <div style={{ marginTop: '1rem' }}>
+            <select value={job.status} onChange={e => saveJob({...job, status: e.target.value})}>
+              <option value="Pending">Pending</option>
+              <option value="Assigned">Assigned</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Completed">Completed</option>
+              <option value="Invoiced">Invoiced</option>
+            </select>
+          </div>
+        )}
 
-{job.status === 'Invoiced' && (
-           <div style={{ marginTop: '1rem', padding: '1rem', background: '#f0fff4', borderLeft: '4px solid #38a169' }}>
-             <strong>Payment via EFT to bank account:</strong>
-             <p>Bank: FNB<br />Account: 123456789<br />Branch: 250655<br />Reference: Job #{job.id}</p>
-             <button className="btn btn-sm" onClick={() => navigator.clipboard.writeText(formatForZero())} style={{ marginTop: '0.5rem' }}>Copy for Zero</button>
-           </div>
-         )}
+        {job.status === 'Invoiced' && (
+          <div style={{ marginTop: '1rem', padding: '1rem', background: '#f0fff4', borderLeft: '4px solid #38a169' }}>
+            <strong>Payment via EFT to bank account:</strong>
+            <p>Bank: FNB<br />Account: 123456789<br />Branch: 250655<br />Reference: Job #{job.id}</p>
+            <button className="btn btn-sm" onClick={() => navigator.clipboard.writeText(formatForZero())} style={{ marginTop: '0.5rem' }}>Copy for Zero</button>
+          </div>
+        )}
       </div>
     </div>
   );
