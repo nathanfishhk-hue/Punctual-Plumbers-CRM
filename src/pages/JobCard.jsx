@@ -7,15 +7,11 @@ export default function JobCard({ userRole }) {
   const navigate = useNavigate();
   const [job, setJob] = useState(null);
   const [materialForm, setMaterialForm] = useState({ name: '', quantity: 1, price: 0 });
-  const [materials, setMaterials] = useState([]);
 
   useEffect(() => {
     const storedJobs = JSON.parse(localStorage.getItem('pp_jobs') || '[]');
     const found = storedJobs.find(j => j.id.toString() === id);
-    if (found) {
-      setJob(found);
-      setMaterials(found.materials || []);
-    }
+    if (found) setJob(found);
   }, [id]);
 
   const saveJob = (updated) => {
@@ -26,11 +22,11 @@ export default function JobCard({ userRole }) {
 
   const calculateTotal = () => {
     const labourCost = job.labourHours * job.labourRate;
-    const materialCost = materials.reduce((sum, m) => sum + m.total, 0);
+    const materialCost = (job.materials || []).reduce((sum, m) => sum + m.total, 0);
     const subtotal = labourCost + materialCost;
     const vat = subtotal * 0.15;
     const total = subtotal + vat;
-    return { labourCost, materialCost, vat, total, subtotal };
+    return { labourCost, materialCost, vat, total };
   };
 
   const handleTimeLog = (type) => {
@@ -49,8 +45,7 @@ export default function JobCard({ userRole }) {
   const addMaterial = (e) => {
     e.preventDefault();
     const mat = { ...materialForm, id: Date.now(), total: materialForm.quantity * materialForm.price };
-    const newMaterials = [...materials, mat];
-    setMaterials(newMaterials);
+    const newMaterials = [...(job.materials || []), mat];
     saveJob({ ...job, materials: newMaterials });
     setMaterialForm({ name: '', quantity: 1, price: 0 });
   };
@@ -99,7 +94,7 @@ export default function JobCard({ userRole }) {
         <div style={{ marginTop: '1rem' }}>
           <h3>Materials Used</h3>
           <ul>
-            {materials.map(m => (
+            {(job.materials || []).map(m => (
               <li key={m.id}>{m.name} × {m.quantity} @ R{m.price} = R{m.total}</li>
             ))}
           </ul>

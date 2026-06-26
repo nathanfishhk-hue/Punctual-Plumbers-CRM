@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
-export default function Login({ setUser }) {
+export default function Login() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ email: '', password: '' });
 
@@ -11,8 +11,8 @@ export default function Login({ setUser }) {
     const user = users.find(u => u.email === formData.email && u.password === formData.password);
     if (user) {
       localStorage.setItem('pp_user', JSON.stringify(user));
-      setUser(user);
       navigate('/');
+      window.location.reload();
     } else {
       alert('Invalid credentials');
     }
