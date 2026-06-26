@@ -34,10 +34,10 @@ export default function Customers() {
         {showForm && (
           <form onSubmit={handleSubmit} className="card" style={{ background: '#f7fafc' }}>
             <div className="grid grid-2">
-              <div className="form-group"><label>Name</label><input value={formData.name} onChange={e => setFormData({...formData, name: e.target})} required /></div>
-              <div className="form-group"><label>Email</label><input type="email" value={formData.email} onChange={e => setFormData({...formData, email: e.target})} required /></div>
-              <div className="form-group"><label>Phone</label><input value={formData.phone} onChange={e => setFormData({...formData, phone: e.target})} /></div>
-              <div className="form-group"><label>Address</label><input value={formData.address} onChange={e => setFormData({...formData, address: e.target})} /></div>
+              <div className="form-group"><label>Name</label><input value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required /></div>
+              <div className="form-group"><label>Email</label><input type="email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} required /></div>
+              <div className="form-group"><label>Phone</label><input value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} /></div>
+              <div className="form-group"><label>Address</label><input value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} /></div>
             </div>
             <button className="btn btn-success" type="submit">Save Customer</button>
           </form>

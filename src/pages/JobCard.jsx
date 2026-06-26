@@ -105,9 +105,9 @@ export default function JobCard({ userRole }) {
             ))}
           </ul>
           <form onSubmit={addMaterial} className="grid grid-3">
-            <input placeholder="Material name" value={materialForm.name} onChange={e => setMaterialForm({...materialForm, name: e.target})} required />
-            <input type="number" placeholder="Qty" value={materialForm.quantity} onChange={e => setMaterialForm({...materialForm, quantity: +e.target})} min="1" required />
-            <input type="number" placeholder="Price" value={materialForm.price} onChange={e => setMaterialForm({...materialForm, price: +e.target})} min="0" step="0.01" required />
+            <input placeholder="Material name" value={materialForm.name} onChange={e => setMaterialForm({...materialForm, name: e.target.value})} required />
+            <input type="number" placeholder="Qty" value={materialForm.quantity} onChange={e => setMaterialForm({...materialForm, quantity: +e.target.value})} min="1" required />
+            <input type="number" placeholder="Price" value={materialForm.price} onChange={e => setMaterialForm({...materialForm, price: +e.target.value})} min="0" step="0.01" required />
             <button className="btn btn-primary" type="submit">Add Material</button>
           </form>
         </div>

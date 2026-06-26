@@ -67,19 +67,19 @@ export default function Jobs({ userRole }) {
                 <div className="form-group">
                   <label>Customer</label>
                   <select value={formData.customerId} onChange={e => {
-                    const cust = customers.find(c => c.id.toString() === e.target);
-                    setFormData({...formData, customerId: e.target, customerName: cust?.name || '', phone: cust?.phone || '', address: cust?.address || ''});
+                    const cust = customers.find(c => c.id.toString() === e.target.value);
+                    setFormData({...formData, customerId: e.target.value, customerName: cust?.name || '', phone: cust?.phone || '', address: cust?.address || ''});
                   }} required>
                     <option value="">Select Customer</option>
                     {customers.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                   </select>
                 </div>
-                <div className="form-group"><label>Phone</label><input value={formData.phone} onChange={e => setFormData({...formData, phone: e.target})} /></div>
-                <div className="form-group"><label>Address</label><input value={formData.address} onChange={e => setFormData({...formData, address: e.target})} /></div>
-                <div className="form-group"><label>Job Description</label><input value={formData.description} onChange={e => setFormData({...formData, description: e.target})} /></div>
+                <div className="form-group"><label>Phone</label><input value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} /></div>
+                <div className="form-group"><label>Address</label><input value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} /></div>
+                <div className="form-group"><label>Job Description</label><input value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} /></div>
                 <div className="form-group">
                   <label>Assign To</label>
-                  <select value={formData.assignedTo} onChange={e => setFormData({...formData, assignedTo: e.target})}>
+                  <select value={formData.assignedTo} onChange={e => setFormData({...formData, assignedTo: e.target.value})}>
                     <option value="">Unassigned</option>
                     {employees.map(e => <option key={e.email} value={e.email}>{e.name}</option>)}
                   </select>

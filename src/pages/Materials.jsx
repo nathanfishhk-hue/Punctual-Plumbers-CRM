@@ -35,15 +35,15 @@ export default function Materials() {
           <form onSubmit={handleSubmit} className="card" style={{ background: '#f7fafc' }}>
             <div className="form-group">
               <label>Material Name</label>
-              <input value={formData.name} onChange={e => setFormData({...formData, name: e.target})} required />
+              <input value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required />
             </div>
             <div className="form-group">
               <label>Description</label>
-              <textarea value={formData.description} onChange={e => setFormData({...formData, description: e.target})} />
+              <textarea value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} />
             </div>
             <div className="form-group">
               <label>Default Price</label>
-              <input type="number" value={formData.defaultPrice} onChange={e => setFormData({...formData, defaultPrice: +e.target})} min="0" step="0.01" required />
+              <input type="number" value={formData.defaultPrice} onChange={e => setFormData({...formData, defaultPrice: +e.target.value})} min="0" step="0.01" required />
             </div>
             <button className="btn btn-success" type="submit">Save Material</button>
           </form>
