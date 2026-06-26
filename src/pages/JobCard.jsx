@@ -6,7 +6,6 @@ export default function JobCard({ userRole }) {
   const { id } = useParams();
   const navigate = useNavigate();
   const [job, setJob] = useState(null);
-  const [timeLog, setTimeLog] = useState({ timeIn: '', timeOut: '' });
   const [materialForm, setMaterialForm] = useState({ name: '', quantity: 1, price: 0 });
   const [materials, setMaterials] = useState([]);
 
@@ -63,7 +62,7 @@ export default function JobCard({ userRole }) {
 
   if (!job) return <div className="container"><p>Loading...</p></div>;
 
-  const { labourCost, materialCost, vat, total, subtotal } = calculateTotal();
+  const { labourCost, materialCost, vat, total } = calculateTotal();
 
   return (
     <div className="container">

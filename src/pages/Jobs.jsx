@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 export default function Jobs({ userRole }) {
-  const navigate = useNavigate();
   const [jobs, setJobs] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [employees, setEmployees] = useState([]);
@@ -39,10 +38,6 @@ export default function Jobs({ userRole }) {
     saveJobs([newJob, ...jobs]);
     setShowForm(false);
     setFormData({ customerId: '', customerName: '', phone: '', address: '', description: '', status: 'Pending', assignedTo: '' });
-  };
-
-  const updateStatus = (id, status) => {
-    saveJobs(jobs.map(j => j.id === id ? {...j, status} : j));
   };
 
   const sendToAccountant = async (job) => {
