@@ -113,11 +113,30 @@ export default function JobCard({ userRole }) {
           </form>
         </div>
 
-        {userRole === 'employee' && job.status !== 'Completed' && (
+        {userRole === 'admin' && (
+           <>
+             <button className="btn btn-success" onClick={() => { saveJob({...job, status: 'Completed'}); alert('Job marked completed'); }} style={{ marginTop: '1rem', marginRight: '0.5rem' }}>Mark Complete</button>
+             <button className="btn btn-primary" onClick={() => { saveJob({...job, status: 'Invoiced'}); alert('Job sent to accountant'); }} style={{ marginTop: '1rem' }}>Send to Accountant</button>
+           </>
+         )}
+
+         {userRole === 'employee' && job.status !== 'Completed' && (
           <button className="btn btn-success" onClick={submitJob} style={{ marginTop: '1rem' }}>Submit Completed Job</button>
         )}
 
-        {job.status === 'Invoiced' && (
+        {userRole === 'admin' && (
+           <div style={{ marginTop: '1rem' }}>
+             <select value={job.status} onChange={e => saveJob({...job, status: e.target.value})}>
+               <option value="Pending">Pending</option>
+               <option value="Assigned">Assigned</option>
+               <option value="In Progress">In Progress</option>
+               <option value="Completed">Completed</option>
+               <option value="Invoiced">Invoiced</option>
+             </select>
+           </div>
+         )}
+
+         {job.status === 'Invoiced' && (
           <div style={{ marginTop: '1rem', padding: '1rem', background: '#f0fff4', borderLeft: '4px solid #38a169' }}>
             <strong>Payment via EFT to bank account:</strong>
             <p>Bank: FNB<br />Account: 123456789<br />Branch: 250655<br />Reference: Job #{job.id}</p>
